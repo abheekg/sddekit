@@ -76,7 +76,6 @@ def compile_file(source_file, debug=False):
 def assemble_shared_lib(object_files):
     cmd = COMPILE['.c'] + ['-shared', '-lm']
     cmd += object_files
-    cmd += OCL_LIB
     sh(cmd)
     
 def source_files():
