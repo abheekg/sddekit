@@ -69,7 +69,7 @@ def compile_file(source_file, debug=False):
     obj_file = os.path.join(BUILD_DIR, 
         '_'.join(name.split(os.path.sep)[2:]) + '.o')
     cmd += ['-c', source_file, '-o', obj_file]
-    cmd += [OCL_LIB + '-lOpenCL']
+    cmd += [OCL_LIB, '-lOpenCL']
     sh(cmd)
     return obj_file
 
