@@ -41,15 +41,17 @@ def configure():
     if '-pg' in sys.argv:
         append_flags('-pg')
 
-    # Check for Linux-AMD
-    if "AMDAPPSDKROOT" in os.environ:
-#        INC_DIRS=. $(AMDAPPSDKROOT)/include
+    # Check for OCL library path
+    if "LD_LIBRARY_PATH" in os.environ:
+        ocl_lib = '-L' + os.environ['LD_LIBRARY_PATH']
+    elif "AMDAPPSDKROOT" in os.environ:
+        #INC_DIRS=. $(AMDAPPSDKROOT)/include
         if os.environ.get('PROC_TYPE') == None:
             ocl_lib = '-L' + os.environ['AMDAPPSDKROOT'] + '/lib/x86'
         else:
             ocl_lib = '-L' + os.environ['AMDAPPSDKROOT'] + '/lib/x86_64'
     else:
-        ocl_lib = ''
+        ocl_lib = ""
 
     # directory for build artifacts
     build_dir = 'build'
