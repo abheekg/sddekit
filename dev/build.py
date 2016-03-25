@@ -41,13 +41,23 @@ def configure():
     if '-pg' in sys.argv:
         append_flags('-pg')
 
+    # Check for Linux-AMD
+    if "AMDAPPSDKROOT" in os.environ:
+#        INC_DIRS=. $(AMDAPPSDKROOT)/include
+        if os.environ.get('PROC_TYPE') == None:
+            ocl_lib = '-L' + os.environ['AMDAPPSDKROOT'] + '/lib/x86'
+        else:
+            ocl_lib = '-L' + os.environ['AMDAPPSDKROOT'] + '/lib/x86_64'
+    else:
+        ocl_lib = ''
+
     # directory for build artifacts
     build_dir = 'build'
     if not os.path.exists(build_dir):
         os.mkdir(build_dir)
-    return includes, compile, dll_ext, build_dir
+    return includes, compile, dll_ext, build_dir, ocl_lib
 
-INCLUDES, COMPILE, DLL_EXT, BUILD_DIR = configure()
+INCLUDES, COMPILE, DLL_EXT, BUILD_DIR, OCL_LIB = configure()
 
 def sh(cmd):
     LOG.info(' '.join(cmd))
@@ -59,14 +69,14 @@ def compile_file(source_file, debug=False):
     obj_file = os.path.join(BUILD_DIR, 
         '_'.join(name.split(os.path.sep)[2:]) + '.o')
     cmd += ['-c', source_file, '-o', obj_file]
-    cmd += ['-lOpenCL']
+    cmd += [OCL_LIB + '-lOpenCL']
     sh(cmd)
     return obj_file
 
 def assemble_shared_lib(object_files):
     cmd = COMPILE['.c'] + ['-shared', '-lm']
     cmd += object_files
-    cmd += ['-o', os.path.join(BUILD_DIR, 'libSDDEKit') + DLL_EXT]
+    cmd += OCL_LIB
     sh(cmd)
     
 def source_files():
@@ -97,7 +107,7 @@ def build_benchmarks(object_files, use_shared=False):
         else:
             cmd += object_files
         cmd += [source + '.c', '-lm', '-o', os.path.join(BUILD_DIR, benchmark)]
-        cmd += ['-lOpenCL']
+        cmd += [OCL_LIB + '-lOpenCL']
         sh(cmd)
 
 def clean():
