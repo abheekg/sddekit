@@ -107,7 +107,7 @@ def build_benchmarks(object_files, use_shared=False):
         else:
             cmd += object_files
         cmd += [source + '.c', '-lm', '-o', os.path.join(BUILD_DIR, benchmark)]
-        cmd += [OCL_LIB + '-lOpenCL']
+        cmd += [OCL_LIB, '-lOpenCL']
         sh(cmd)
 
 def clean():
